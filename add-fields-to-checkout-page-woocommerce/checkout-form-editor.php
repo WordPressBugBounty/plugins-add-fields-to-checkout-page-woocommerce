@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: WooCommerce Checkout & Account Field Editor
+ * Plugin Name: Custom WooCommerce Checkout Fields Editor
  * Description: Customize WooCommerce checkout and my account page (Add, Edit, Delete and re-arrange fields).
  * Author:      ThemeLocation
- * Version:     1.3.2
+ * Version:     1.3.4
  * Author URI:  https://www.themelocation.com
  * Plugin URI:  
  * Text Domain: wcfe
@@ -1048,7 +1048,7 @@ if ( is_woocommerce_active() ) {
             
             if ( $fields_html ) {
                 do_action( 'wcfe_order_details_before_custom_fields_table', $order ); ?>
-				<h2 class="woocommerce-column__title">
+				<h2 class="woocommerce-column__title" style="padding-top: 20px;display: block;clear: both;font-size: 16px;font-weight: 500;">
 					<?php 
 					if( get_option('wcfe_account_label') !== null && get_option('wcfe_account_label') != ""){
 						$custom_heading = get_option('wcfe_account_label');
@@ -1067,6 +1067,89 @@ if ( is_woocommerce_active() ) {
     }
     
     add_action( 'woocommerce_order_details_after_order_table','wcfe_order_details_after_customer_details_lite', 20, 1 );
+
+    function wcfe_order_details_after_customer_details_lite_hight( $order ) {
+        if ( wcfe_woocommerce_version_check() ) {
+            $order_id = $order->get_id();
+        } else {
+            $order_id = $order->id;
+        }
+        $fields = array();
+        if ( !wc_ship_to_billing_address_only() && $order->needs_shipping_address() ) {
+            $fields = array_merge( WC_Checkout_Field_Editor::get_fields( 'billing' ), WC_Checkout_Field_Editor::get_fields( 'shipping' ), WC_Checkout_Field_Editor::get_fields( 'additional' ) );
+        } else {
+            $fields = array_merge( WC_Checkout_Field_Editor::get_fields( 'billing' ), WC_Checkout_Field_Editor::get_fields( 'additional' ) );
+        }
+        
+        if ( is_array( $fields ) && !empty($fields) ) {
+            $fields_html = '';
+            // Loop through all custom fields to see if it should be added
+            foreach ( $fields as $name => $options ) {
+
+                $enabled = ( isset( $options['enabled'] ) && $options['enabled'] == false ? false : true );
+                $is_custom_field = ( isset( $options['custom'] ) && $options['custom'] == true ? true : false );
+                
+                if ( isset( $options['show_in_order'] ) && $options['show_in_order'] && $enabled && $is_custom_field ) {
+
+                    if ( $options['type'] == 'select' || $options['type'] == 'checkboxgroup' || $options['type'] == 'timepicker' || $options['type'] == 'multiselect' ) {
+
+                        $value = get_post_meta( $order_id, $name, true );
+
+                        if ( is_array( $value ) ) {
+                            $value = implode( ",", $value );
+                        } else {
+                            $value = get_post_meta( $order_id, $name, true );
+                        }
+                    } else {
+                        $value = get_post_meta( $order_id, $name, true );
+                    }
+
+                    if ( !empty($value) ) {
+                        $label = ( isset( $options['label'] ) && !empty($options['label']) ? __( $options['label'], 'wcfe' ) : $name );
+                        
+                        if ( apply_filters( 'wcfe_thankyou_customer_details_table_view', true ) ) {
+                            if ( isset( $options['type'] ) && $options['type'] == 'file' ) {
+                                $fields_html .= '<tr><th>' . esc_attr( $label ) . ':</th><td><a href="' . esc_url( $value ) . '" download>Download File</a></td></tr>';
+                            } else {
+                                $fields_html .= '<tr><th>' . esc_attr( $label ) . ':</th><td>' . wptexturize( $value ) . '</td></tr>';
+                            }
+                        } else {
+                            if ( isset( $options['type'] ) && $options['type'] == 'file' ) {
+                                $fields_html .= '<br/><dt>' . esc_attr( $label ) . ':</dt><dd><a href="' . esc_url( $value ) . '" download>Download File</a></dd>';
+                            } else {
+                                $fields_html .= '<br/><dt>' . esc_attr( $label ) . ':</dt><dd>' . wptexturize( $value ) . '</dd>';
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if ( $fields_html ) {
+                do_action( 'wcfe_order_details_before_custom_fields_table', $order ); ?>
+				<h2 class="woocommerce-column__title" style="padding-top: 20px;display: block;clear: both;font-size: 16px;font-weight: 500;">
+					<?php 
+					if( get_option('wcfe_account_label') !== null && get_option('wcfe_account_label') != ""){
+						$custom_heading = get_option('wcfe_account_label');
+					} else{
+						$custom_heading = esc_html__('Custom Checkout Fields','wcfe');
+					}
+	                echo $custom_heading; ?> 
+            	</h2>
+				<table class="woocommerce-table woocommerce-table--custom-fields shop_table custom-fields">
+					<?php echo $fields_html ;?>
+				</table>
+				<?php 
+                do_action( 'wcfe_order_details_after_custom_fields_table', $order );
+            }
+        }
+    }
+    
+    // woocommerce_admin_order_data_after_billing_address
+    // woocommerce_admin_order_data_after_order_details
+    //woocommerce_admin_order_data_after_shipping_address
+    
+    add_action( 'woocommerce_admin_order_data_after_order_details', 'wcfe_order_details_after_customer_details_lite_hight', 20, 5 );
+    
 
     /**
      * WooCommerce Checkout & Account Field Register Meta Box

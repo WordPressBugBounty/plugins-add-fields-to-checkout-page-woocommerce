@@ -2,11 +2,11 @@
 Contributors: themelocation
 Tags: checkout field editor, woocommerce checkout fields, WooCommerce checkout manager, woocommerce custom fields, WooCommerce checkout, woocommerce fields manager
 Requires at least: 4.5
-Tested up to: 6.4.3
-WC tested up to: 8.6.1
+Tested up to: 6.7.1
+WC tested up to: 9.5.1
 WC requires at least: 3.1.0
-Version: 1.3.2
-Stable Tag: 1.3.2
+Version: 1.3.4
+Stable Tag: 1.3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 

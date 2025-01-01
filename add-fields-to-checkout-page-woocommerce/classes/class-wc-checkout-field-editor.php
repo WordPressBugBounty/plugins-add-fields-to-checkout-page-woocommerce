@@ -901,7 +901,7 @@ class WC_Checkout_Field_Editor {
 		$addClass = '';
 		?>
 		
-        <div id="wcfe_new_field_form_pp" title="<?php echo esc_html($formTitle); ?>" class="<?php echo $addClass; ?> wcfe_popup_wrapper">
+        <div id="wcfe_new_field_form_pp" title="<?php echo esc_html($formTitle); ?>" class="<?php echo esc_attr($addClass); ?> wcfe_popup_wrapper">
         	<form method="post" id="wcfe_new_field_form" action="">
 				<input type="hidden" name="i_options" value="" />
 				<input type="hidden" name="i_rules" value="" />
@@ -917,7 +917,7 @@ class WC_Checkout_Field_Editor {
 						<td width="80%">
 							<select name="ftype" class="field-type-select-new" style="width:100%;" onchange="wcfeFieldTypeChangeListner(this)">
 							<?php foreach($field_types as $value=>$label) { ?>
-								<option value="<?php echo trim($value); ?>"><?php echo $label; ?></option>
+								<option value="<?php echo trim($value); ?>"><?php echo esc_html($label); ?></option>
 							<?php } ?>
 							</select>
 						</td>
@@ -1087,7 +1087,7 @@ class WC_Checkout_Field_Editor {
 		$formTitle = 'Edit Checkout Field';
 		$addClass = '';
 		?>
-        <div id="wcfe_edit_field_form_pp" title="<?php echo $formTitle; ?>" class="<?php echo $addClass; ?> wcfe_popup_wrapper">
+        <div id="wcfe_edit_field_form_pp" title="<?php echo $formTitle; ?>" class="<?php echo esc_attr($addClass); ?> wcfe_popup_wrapper">
 	        <form id="wcfe_field_editor_form_edit">
 				<input type="hidden" name="i_options" value="" />
 				<input type="hidden" name="i_rules" value="" />
@@ -1112,7 +1112,7 @@ class WC_Checkout_Field_Editor {
 						<td width="80%">
 							<select name="ftype" style="width:100%;" class="field-type-select" onchange="wcfeFieldTypeChangeListner(this)">
 							<?php foreach($field_types as $value=>$label){ ?>
-								<option value="<?php echo trim($value); ?>"><?php echo $label; ?></option>
+								<option value="<?php echo trim($value); ?>"><?php echo esc_html($label); ?></option>
 							<?php } ?>
 							</select>
 						</td>
@@ -1280,7 +1280,7 @@ class WC_Checkout_Field_Editor {
 		echo '<h2 class="nav-tab-wrapper woo-nav-tab-wrapper">';
 		foreach( $tabs as $key => $value ) {
 			$active = ( $key == $tab ) ? 'nav-tab-active' : '';
-			echo '<a class="nav-tab '.$active.'" href="'.admin_url('admin.php?page=checkout_form_editor&tab='.$key).'">'.$value.'</a>';
+			echo '<a class="nav-tab '.esc_attr($active).'" href="'.esc_url(admin_url('admin.php?page=checkout_form_editor&tab='.esc_attr($key))).'">'.esc_html($value).'</a>';
 		}
 		echo '</h2>';
 		
@@ -1292,7 +1292,7 @@ class WC_Checkout_Field_Editor {
 				$active = ( $key == $section ) ? 'current' : '';
 				$url = 'admin.php?page=checkout_form_editor&tab=fields&section='.$key;
 				echo '<li>';
-				echo '<a href="'. admin_url($url) .'" class="'. $active .'" >'.ucwords($key).' '.esc_html__('Fields', 'wcfe').'</a>';
+				echo '<a href="'. esc_url(admin_url($url)) .'" class="'. esc_attr($active) .'" >'.ucwords($key).' '.esc_html__('Fields', 'wcfe').'</a>';
 				echo ($size > $i) ? ' ' : '';
 				echo '</li>';				
 			}
@@ -1355,14 +1355,14 @@ class WC_Checkout_Field_Editor {
 	 */	
 	function render_actions_row($section) { ?>
         <th colspan="7">
-            <button type="button" class="button button-primary" onclick="openNewFieldForm('<?php echo $section; ?>')"><?php _e( '+ Add new field', 'wcfe' ); ?></button>
-            <button type="button" class="button" onclick="removeSelectedFields()"><?php _e( 'Remove', 'wcfe' ); ?></button>
-            <button type="button" class="button" onclick="enableSelectedFields()"><?php _e( 'Enable', 'wcfe' ); ?></button>
-            <button type="button" class="button" onclick="disableSelectedFields()"><?php _e( 'Disable', 'wcfe' ); ?></button>
+            <button type="button" class="button button-primary" onclick="openNewFieldForm('<?php echo esc_attr($section); ?>')"><?php esc_html_e( '+ Add new field', 'wcfe' ); ?></button>
+            <button type="button" class="button" onclick="removeSelectedFields()"><?php esc_html_e( 'Remove', 'wcfe' ); ?></button>
+            <button type="button" class="button" onclick="enableSelectedFields()"><?php esc_html_e( 'Enable', 'wcfe' ); ?></button>
+            <button type="button" class="button" onclick="disableSelectedFields()"><?php esc_html_e( 'Disable', 'wcfe' ); ?></button>
         </th>
         <th colspan="4">
-        	<input type="submit" name="save_fields" class="button-primary" value="<?php _e( 'Save changes', 'wcfe' ) ?>" style="float:right" />
-            <input type="submit" name="reset_fields" class="button" value="<?php _e( 'Reset to default fields', 'wcfe' ) ?>" style="float:right; margin-right: 5px;" 
+        	<input type="submit" name="save_fields" class="button-primary" value="<?php esc_html_e( 'Save changes', 'wcfe' ) ?>" style="float:right" />
+            <input type="submit" name="reset_fields" class="button" value="<?php esc_html_e( 'Reset to default fields', 'wcfe' ) ?>" style="float:right; margin-right: 5px;" 
 			onclick="return confirm('Are you sure you want to reset to default fields? all your changes will be deleted.');"/>
         </th>  
     <?php }
@@ -1821,7 +1821,6 @@ class WC_Checkout_Field_Editor {
 		}
 			
 		echo '1';
-			
 		wp_die();
 	}
 	
@@ -1836,58 +1835,58 @@ class WC_Checkout_Field_Editor {
 
 		$fields        = $o_fields;
 	
-		$f_order       = !empty( $_POST['f_order'] ) ? $_POST['f_order'] : array();
+		$f_order       = !empty( $_POST['f_order'] ) ? wp_unslash($_POST['f_order']) : array();
 		
-		$f_names       = !empty( $_POST['f_name'] ) ? $_POST['f_name'] : array();
+		$f_names       = !empty( $_POST['f_name'] ) ? wp_unslash($_POST['f_name']) : array();
 		
-		$f_names_new   = !empty( $_POST['f_name_new'] ) ? $_POST['f_name_new'] : array();
+		$f_names_new   = !empty( $_POST['f_name_new'] ) ? wp_unslash($_POST['f_name_new']) : array();
 	
-		$f_types       = !empty( $_POST['f_type'] ) ? $_POST['f_type'] : array();
-		$f_labels      = !empty( $_POST['f_label'] ) ? $_POST['f_label'] : array();
-		$f_extoptions  = !empty( $_POST['f_extoptions'] ) ? $_POST['f_extoptions'] : array();
-		$f_access      = !empty( $_POST['f_access'] ) ? $_POST['f_access'] : array();
+		$f_types       = !empty( $_POST['f_type'] ) ? wp_unslash($_POST['f_type']) : array();
+		$f_labels      = !empty( $_POST['f_label'] ) ? wp_unslash($_POST['f_label']) : array();
+		$f_extoptions  = !empty( $_POST['f_extoptions'] ) ? wp_unslash($_POST['f_extoptions']) : array();
+		$f_access      = !empty( $_POST['f_access'] ) ? wp_unslash($_POST['f_access']) : array();
 		
-		$f_placeholder = !empty( $_POST['f_placeholder'] ) ? $_POST['f_placeholder'] : array();
+		$f_placeholder = !empty( $_POST['f_placeholder'] ) ? wp_unslash($_POST['f_placeholder']) : array();
 		
-		$i_price       = !empty( $_POST['i_price'] ) ? $_POST['i_price'] : array();
-		$i_price_unit  = !empty( $_POST['i_price_unit'] ) ? $_POST['i_price_unit'] : array();
-		$i_price_type  = !empty( $_POST['i_price_type'] ) ? $_POST['i_price_type'] : array();
+		$i_price       = !empty( $_POST['i_price'] ) ? wp_unslash($_POST['i_price']) : array();
+		$i_price_unit  = !empty( $_POST['i_price_unit'] ) ? wp_unslash($_POST['i_price_unit']) : array();
+		$i_price_type  = !empty( $_POST['i_price_type'] ) ? wp_unslash($_POST['i_price_type']) : array();
 		
-		$i_min_time    = !empty( $_POST['i_min_time'] ) ? $_POST['i_min_time'] : array();
-		$i_max_time    = !empty( $_POST['i_max_time'] ) ? $_POST['i_max_time'] : array();
+		$i_min_time    = !empty( $_POST['i_min_time'] ) ? wp_unslash($_POST['i_min_time']) : array();
+		$i_max_time    = !empty( $_POST['i_max_time'] ) ? wp_unslash($_POST['i_max_time']) : array();
 		
-		$i_time_step   = !empty( $_POST['i_time_step'] ) ? $_POST['i_time_step'] : array();
-		$i_time_format = !empty( $_POST['i_time_format'] ) ? $_POST['i_time_format'] : array();
+		$i_time_step   = !empty( $_POST['i_time_step'] ) ? wp_unslash($_POST['i_time_step']) : array();
+		$i_time_format = !empty( $_POST['i_time_format'] ) ? wp_unslash($_POST['i_time_format']) : array();
 		
-		$i_taxable     = !empty( $_POST['i_taxable'] ) ? $_POST['i_taxable'] : array();
-		$i_tax_class   = !empty( $_POST['i_tax_class'] ) ? $_POST['i_tax_class'] : array();
+		$i_taxable     = !empty( $_POST['i_taxable'] ) ? wp_unslash($_POST['i_taxable']) : array();
+		$i_tax_class   = !empty( $_POST['i_tax_class'] ) ? wp_unslash($_POST['i_tax_class']) : array();
 		
-		$f_maxlength   = !empty( $_POST['f_maxlength'] ) ? $_POST['f_maxlength'] : array();
+		$f_maxlength   = !empty( $_POST['f_maxlength'] ) ? wp_unslash($_POST['f_maxlength']) : array();
 		
 		
 		if( isset($_POST['f_options']) ){
-			$f_options   = !empty( $_POST['f_options'] ) ? $_POST['f_options'] : array();
+			$f_options   = !empty( $_POST['f_options'] ) ? wp_unslash($_POST['f_options']) : array();
 		}
 				
-		$f_class       = !empty( $_POST['f_class'] ) ? $_POST['f_class'] : array();
+		$f_class       = !empty( $_POST['f_class'] ) ? wp_unslash($_POST['f_class']) : array();
 		
-		$f_required    = !empty( $_POST['f_required'] ) ? $_POST['f_required'] : array();
+		$f_required    = !empty( $_POST['f_required'] ) ? wp_unslash($_POST['f_required']) : array();
 		
-		$f_enabled     = !empty( $_POST['f_enabled'] ) ? $_POST['f_enabled'] : array();
+		$f_enabled     = !empty( $_POST['f_enabled'] ) ? wp_unslash($_POST['f_enabled']) : array();
 		
-		$f_show_in_email = !empty( $_POST['f_show_in_email'] ) ? $_POST['f_show_in_email'] : array();
+		$f_show_in_email = !empty( $_POST['f_show_in_email'] ) ? wp_unslash($_POST['f_show_in_email']) : array();
 
-		$f_show_in_order = !empty( $_POST['f_show_in_order'] ) ? $_POST['f_show_in_order'] : array();
+		$f_show_in_order = !empty( $_POST['f_show_in_order'] ) ? wp_unslash($_POST['f_show_in_order']) : array();
 
-		$f_show_in_my_account = !empty( $_POST['f_show_in_my_account'] ) ? $_POST['f_show_in_my_account'] : array();
+		$f_show_in_my_account = !empty( $_POST['f_show_in_my_account'] ) ? wp_unslash($_POST['f_show_in_my_account']) : array();
 		
-		$f_validation  = !empty( $_POST['f_validation'] ) ? $_POST['f_validation'] : array();
+		$f_validation  = !empty( $_POST['f_validation'] ) ? wp_unslash($_POST['f_validation']) : array();
 
-		$f_deleted     = !empty( $_POST['f_deleted'] ) ? $_POST['f_deleted'] : array();
+		$f_deleted     = !empty( $_POST['f_deleted'] ) ? wp_unslash($_POST['f_deleted']) : array();
 						
-		$f_position    = !empty( $_POST['f_position'] ) ? $_POST['f_position'] : array();
+		$f_position    = !empty( $_POST['f_position'] ) ? wp_unslash($_POST['f_position']) : array();
 
-		$f_display_options = !empty( $_POST['f_display_options'] ) ? $_POST['f_display_options'] : array();
+		$f_display_options = !empty( $_POST['f_display_options'] ) ? wp_unslash($_POST['f_display_options']) : array();
 		
 		$max  = max( array_map( 'absint', array_keys( $f_names ) ) );
 			
@@ -2074,10 +2073,14 @@ class WC_Checkout_Field_Editor {
 		}
 		
 		uasort( $fields, array( $this, 'sort_fields_by_order' ) );
-
-		if ( isset( $_POST['wcfe_checkout_fields_saves'] ) && current_user_can( 'manage_options' ) && wp_verify_nonce( $_POST['wcfe_checkout_fields_saves'], 'wcfe_checkout_fields_nounce' ) ) {
-			$result = update_option( 'wc_fields_' . $section, $fields );
-		}		
+		
+		if (
+			isset($_POST['wcfe_checkout_fields_saves']) && 
+			current_user_can('manage_options') && 
+			wp_verify_nonce(wp_unslash($_POST['wcfe_checkout_fields_saves']), 'wcfe_checkout_fields_nounce')
+		) {
+			$result = update_option('wc_fields_' . $section, $fields);
+		}
 
 		if ( $result == true ) {
 			echo '<div class="updated"><p>' . esc_html__( 'Your changes were saved.', 'wcfe' ) . '</p></div>';
